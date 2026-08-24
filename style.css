@@ -10,3 +10,22 @@ main{max-width:1250px;margin:auto;padding:18px}.hero{min-height:250px;border-rad
 footer{margin-top:18px;background:var(--navy);color:#fff;padding:20px 5%;display:flex;justify-content:center;gap:28px;flex-wrap:wrap;font-size:11px}
 @media(max-width:950px){.top nav{display:none}.layout{grid-template-columns:1fr}.schedule-grid{grid-template-columns:1fr}.info{display:grid;grid-template-columns:repeat(3,1fr)}.info>a{grid-column:1/-1;justify-self:start}.community{grid-template-columns:1fr}}
 @media(max-width:700px){main{padding:10px}.hero{min-height:300px;padding:25px}.layout{display:block}.layout aside{margin-bottom:14px}.card{margin-bottom:12px}.sunday,.rehearsal{grid-template-columns:1fr}.songs{grid-template-columns:auto 1fr}.community-box{min-height:180px}.info{grid-template-columns:1fr}.dates span{min-height:42px}.days b{font-size:7px}}
+.footer {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 25px 20px;
+    text-align: center;
+    background: #202020;
+    color: #ffffff;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-top: 30px;
+}
+
+.footer p {
+    margin: 4px 0;
+}
+
+.footer strong {
+    color: #8fc7df;
+}
