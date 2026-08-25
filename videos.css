@@ -1,0 +1,29 @@
+*{box-sizing:border-box}
+:root{--navy:#0b315d;--blue:#2e72bd;--orange:#f47b45;--bg:#eef4f9;--text:#18324f;--muted:#65758a;--white:#fff}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.top{min-height:88px;padding:14px 5%;background:var(--navy);display:flex;align-items:center;justify-content:space-between;gap:25px}
+.brand{color:#fff;text-decoration:none;display:flex;align-items:center;gap:14px}
+.brand img{width:58px;height:58px;object-fit:contain;border-radius:8px;background:#fff}
+.brand div{display:flex;flex-direction:column;line-height:1.05}
+.brand small{font-size:11px;letter-spacing:1.8px;margin-bottom:7px}
+.brand b{font:23px Georgia,"Times New Roman",serif}
+nav{display:flex;gap:20px;flex-wrap:wrap}
+nav a{color:#fff;text-decoration:none;font-weight:600;font-size:14px}
+.container{width:min(1050px,92%);margin:30px auto 55px}
+.intro{background:#fff;border-radius:22px;padding:38px 44px;box-shadow:0 8px 25px rgba(25,57,89,.09)}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.7px;color:var(--blue)}
+h1{margin:10px 0 8px;color:var(--navy);font:clamp(38px,5vw,58px)/1.03 Georgia,"Times New Roman",serif}
+.intro p{max-width:760px;margin:0;color:var(--muted);font-size:17px;line-height:1.6}
+.history{display:flex;flex-direction:column;gap:24px;margin-top:24px}
+.video-banner{overflow:hidden;background:var(--white);border:1px solid #dce6ef;border-radius:22px;box-shadow:0 8px 25px rgba(25,57,89,.08)}
+.video-frame{width:100%;aspect-ratio:16/9;background:#071a2e}
+.video-frame iframe{width:100%;height:100%;border:0;display:block}
+.video-info{padding:24px 28px 27px}
+.tag{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--orange)}
+h2{margin:8px 0;color:var(--navy);font:30px Georgia,"Times New Roman",serif}
+.video-info p{margin:0 0 18px;color:var(--muted);line-height:1.55}
+.meta{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+.meta a{display:inline-block;padding:10px 15px;border-radius:9px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700}
+.footer{padding:28px 5%;text-align:center;background:var(--navy);color:#dce8f5;font-size:13px;line-height:1.5}
+.footer p{margin:4px 0}
+@media(max-width:700px){.top{align-items:flex-start;flex-direction:column}.brand b{font-size:20px}.intro{padding:30px 24px}.video-info{padding:20px}.video-frame{aspect-ratio:16/10}nav{gap:14px}}
