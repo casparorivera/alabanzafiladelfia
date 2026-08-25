@@ -1,0 +1,101 @@
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#eef4f9;
+color:#17324d;
+}
+
+.top{
+background:#0b315d;
+padding:15px 5%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.brand{
+display:flex;
+align-items:center;
+gap:15px;
+color:white;
+text-decoration:none;
+}
+
+.brand img{
+width:65px;
+height:65px;
+object-fit:contain;
+background:white;
+border-radius:10px;
+}
+
+.brand b{
+display:block;
+font-size:22px;
+}
+
+.brand small{
+font-size:11px;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+margin:10px;
+}
+
+main{
+max-width:1000px;
+margin:auto;
+padding:30px;
+}
+
+.hero{
+background:#173f69;
+color:white;
+text-align:center;
+padding:40px 25px;
+border-radius:25px;
+}
+
+.hero .icon{
+font-size:60px;
+}
+
+.hero h1{
+font-size:40px;
+}
+
+.form-container{
+background:white;
+margin-top:30px;
+padding:20px;
+border-radius:25px;
+box-shadow:0 8px 25px #0001;
+}
+
+iframe{
+border:0;
+border-radius:15px;
+}
+
+.footer{
+background:#0b315d;
+color:white;
+padding:25px;
+text-align:center;
+}
+
+@media(max-width:700px){
+.top{
+flex-direction:column;
+}
+
+main{
+padding:15px;
+}
+
+.hero h1{
+font-size:30px;
+}
+}
