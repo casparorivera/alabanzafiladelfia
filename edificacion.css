@@ -1,0 +1,28 @@
+*{box-sizing:border-box}
+:root{--navy:#0b315d;--blue:#2e72bd;--orange:#f47b45;--bg:#eef4f9;--text:#18324f;--muted:#65758a}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{min-height:88px;padding:14px 5%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{color:#fff;text-decoration:none;display:flex;flex-direction:column;line-height:1.05}
+.brand span{font-size:12px;letter-spacing:2px;margin-bottom:7px}
+.brand strong{font:25px Georgia,"Times New Roman",serif}
+nav{display:flex;flex-wrap:wrap;gap:22px}
+nav a{color:#fff;text-decoration:none;font-weight:600;font-size:14px}
+.container{width:min(1120px,92%);margin:28px auto 50px}
+.hero,.card{background:#fff;border-radius:22px;box-shadow:0 8px 25px rgba(25,57,89,.10)}
+.hero{padding:48px 55px}
+.eyebrow{color:var(--blue);font-size:13px;font-weight:800;letter-spacing:2px}
+h1{margin:12px 0 10px;color:var(--navy);font:clamp(36px,5vw,60px)/.98 Georgia,"Times New Roman",serif}
+.hero p{margin:0;max-width:720px;color:var(--muted);font-size:17px;line-height:1.6}
+.card{margin-top:24px;padding:34px;display:flex;gap:30px;border:1px solid #dce6ef}
+.icon{width:82px;height:82px;flex:0 0 82px;border-radius:50%;display:grid;place-items:center;background:#eaf2fc;font-size:38px}
+.body{flex:1}.date{color:var(--orange);font-size:12px;font-weight:800;letter-spacing:1.5px}
+h2{margin:7px 0 4px;color:var(--navy);font:40px Georgia,"Times New Roman",serif}
+h3{margin:0 0 12px;color:var(--orange);font:25px Georgia,"Times New Roman",serif}
+.description{color:var(--muted);line-height:1.6}
+.player{margin-top:24px;padding:22px;border-radius:16px;background:linear-gradient(135deg,#edf5ff,#fff7f1);border:1px solid #d7e3ef}
+.track{color:var(--navy);margin-bottom:14px}
+audio{display:block;width:100%;height:48px}
+.status{margin-top:10px;color:var(--muted);font-size:12px}
+.status.ok{color:#26734d}.status.error{color:#b04432}
+.back{display:inline-block;margin-top:24px;color:var(--blue);font-weight:700;text-decoration:none}
+@media(max-width:760px){.topbar{align-items:flex-start;flex-direction:column}.hero{padding:34px 25px}.card{flex-direction:column;padding:25px}.icon{width:65px;height:65px;flex-basis:65px;font-size:30px}h2{font-size:32px}}
