@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gran Celebración - Prueba Google Sheets</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;color:#333}
+.container{max-width:900px;margin:auto;background:white;padding:25px;border-radius:15px}
+h1{text-align:center;color:#1b4d89}
+.evento,.observacion{padding:15px;border-radius:10px;margin-bottom:20px}
+.evento{background:#eef5ff}.observacion{background:#fff4d6}
+.seccion{margin-top:25px}.seccion h2{border-bottom:2px solid #ddd;padding-bottom:8px}
+.cancion{background:#fafafa;padding:15px;margin:10px 0;border-radius:10px;border:1px solid #ddd}
+.boton{display:inline-block;margin-top:10px;background:#1b4d89;color:white;padding:8px 15px;border-radius:8px;text-decoration:none}
+.error{color:red}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🎵 Gran Celebración</h1>
+<div id="evento" class="evento">Cargando información del evento...</div>
+<div id="observacion" class="observacion">Cargando observaciones...</div>
+<div id="listado">Cargando listado musical...</div>
+</div>
+
+<script>
+const URL_LISTADO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=0&single=true&output=csv";
+const URL_EVENTO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=146984402&single=true&output=csv";
+
+function parseCSV(text){
+ const rows=[];
+ let row=[], cell="", quote=false;
+ for(let i=0;i<text.length;i++){
+  let c=text[i];
+  if(c=='"'){
+   if(quote && text[i+1]=='"'){cell+='"';i++;}
+   else quote=!quote;
+  }else if(c==',' && !quote){
+   row.push(cell);cell="";
+  }else if((c=='\n'||c=='\r') && !quote){
+   if(c=='\r' && text[i+1]=='\n') i++;
+   row.push(cell);rows.push(row);row=[];cell="";
+  }else cell+=c;
+ }
+ if(cell||row.length){row.push(cell);rows.push(row);}
+ const headers=rows.shift().map(h=>h.trim());
+ return rows.filter(r=>r.length).map(r=>{
+  let o={};
+  headers.forEach((h,i)=>o[h]=r[i]||"");
+  return o;
+ });
+}
+
+async function leerCSV(url){
+ const r=await fetch(url);
+ return parseCSV(await r.text());
+}
+
+async function cargarEvento(){
+ try{
+  const datos=await leerCSV(URL_EVENTO);
+  const e=datos[0]||{};
+  document.getElementById("evento").innerHTML=
+  `<h2>${e.Evento||"Gran celebración"}</h2><p>📅 Fecha: ${e.Fecha||""}</p>`;
+  document.getElementById("observacion").innerHTML=
+  `<h3>📌 Observación general</h3><p>${e["Observación general"]||"Sin observaciones"}</p>`;
+ }catch(err){
+  document.getElementById("evento").innerHTML="Error cargando evento";
+  console.log(err);
+ }
+}
+
+async function cargarListado(){
+ try{
+  const canciones=await leerCSV(URL_LISTADO);
+  let grupos={};
+  canciones.forEach(c=>{
+   let s=c.Sección||c.Seccion||"General";
+   if(!grupos[s]) grupos[s]=[];
+   grupos[s].push(c);
+  });
+
+  let html="";
+  Object.keys(grupos).forEach(s=>{
+   html+=`<div class="seccion"><h2>${s}</h2>`;
+   grupos[s].forEach(c=>{
+    let link=c["Link PDF"]||"";
+    html+=`
+    <div class="cancion">
+    <h3>${c.Orden||""}. ${c.Canción||""}</h3>
+    <p>🎹 Tonalidad: ${c.Tonalidad||""}</p>
+    ${link?`<a class="boton" target="_blank" href="${link}">📄 Ver chart</a>`:""}
+    ${c.Observaciones?`<p><strong>Nota:</strong> ${c.Observaciones}</p>`:""}
+    </div>`;
+   });
+   html+="</div>";
+  });
+  document.getElementById("listado").innerHTML=html;
+ }catch(err){
+  document.getElementById("listado").innerHTML="<p class='error'>Error cargando listado</p>";
+  console.log(err);
+ }
+}
+
+cargarEvento();
+cargarListado();
+</script>
+</body>
+</html>
