@@ -56,9 +56,9 @@
 <a href="cronograma.html">Ver más →</a>
 </div></div></article>
 
-<article class="list sunday"><div class="date">📖<b>DOMINGO<br><strong>30</strong><br>AGOSTO</b></div><div class="title"><small>LISTADO DE MINISTRACIÓN</small><h2>Gran celebración</h2></div><div class="songs"><span>1</span>Digno es el Señor <span>4</span>Eres mi todo <span>2</span>Qué hermoso es tu nombre <span>5</span>Tu fidelidad <span>3</span>Rey de gloria <span>6</span>Bondad de Dios</div><a href="domingo.html">Ver más →</a></article>
+<article class="list sunday"><div class="date">📖<b>DOMINGO<br><strong class="dynamic-day">--</strong><br><span class="dynamic-month">---</span></b></div><div class="title"><small>LISTADO DE MINISTRACIÓN</small><h2>Gran celebración</h2></div><div class="songs"><span>1</span>Digno es el Señor <span>4</span>Eres mi todo <span>2</span>Qué hermoso es tu nombre <span>5</span>Tu fidelidad <span>3</span>Rey de gloria <span>6</span>Bondad de Dios</div><a href="domingo.html">Ver más →</a></article>
 
-<article class="list rehearsal"><div class="bigicon">🎼</div><div class="title"><small>LISTADO DE</small><h2>ENSAYO</h2><em>Sábado 29 de agosto</em></div><div class="songs"><span>1</span>Rey de gloria <span>2</span>Tu fidelidad <span>3</span>Digno es el Señor <span>4</span>Eres mi todo <span>5</span>Qué hermoso es tu nombre</div><div class="time">SÁBADO<strong>5:00 P. M.</strong></div><a href="ensayo.html">Ver más →</a></article>
+<article class="list rehearsal"><div class="bigicon">🎼</div><div class="title"><small>LISTADO DE</small><h2>ENSAYO</h2><em>Sábado 29 de agosto</em></div><div class="songs"><span>1</span>Rey de gloria <span>2</span>Tu fidelidad <span>3</span>Digno es el Señor <span>4</span>Eres mi todo <span>5</span>Qué hermoso es tu nombre</div><div class="time dynamic-arrival"></div><a href="ensayo.html">Ver más →</a></article>
 </section></section>
 
 <section class="community">
@@ -228,6 +228,77 @@ actualizarEventosIndex();
 actualizarEventosIndex = ajustarEventosIndex;
 ajustarEventosIndex();
 
+</script>
+
+
+<script>
+const LISTADO_ACTUAL_INDEX = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=0&single=true&output=csv";
+
+function parseSimpleCSV(t){
+ const lines=t.trim().split(/\r?\n");
+ const headers=lines.shift().split(",").map(x=>x.trim());
+ return lines.map(l=>{
+   const v=l.split(",");
+   let o={};
+   headers.forEach((h,i)=>o[h]=(v[i]||"").trim());
+   return o;
+ });
+}
+
+function normal(t){
+ return (t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+}
+
+function fechaData(valor){
+ if(!valor) return null;
+ let d;
+ if(valor.includes("/")){
+  let p=valor.split("/");
+  d=new Date(p[2],p[1]-1,p[0]);
+ }else{
+  d=new Date(valor);
+ }
+ if(isNaN(d)) return null;
+ const dias=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+ const meses=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+ return {dia:dias[d.getDay()],num:d.getDate(),mes:meses[d.getMonth()]};
+}
+
+async function actualizarTarjetas(){
+ const datos=parseSimpleCSV(await (await fetch(LISTADO_ACTUAL_INDEX)).text());
+
+ function evento(nombre){
+  return datos.filter(x=>normal(x.Evento)==normal(nombre));
+ }
+
+ const domingo=evento("Gran celebración");
+ const ensayo=evento("Ensayo");
+
+ if(domingo.length){
+  const f=fechaData(domingo[0].Fecha);
+  const caja=document.querySelector(".sunday .date");
+  if(caja && f){
+    caja.innerHTML=`📖<b>DOMINGO</b>`;
+  }
+  const titulo=document.querySelector(".sunday .title");
+  if(titulo && f){
+    titulo.insertAdjacentHTML("beforeend",
+    `<div class="dynamic-info">📅 ${f.dia} ${f.num} de ${f.mes}<br>⏰ Llegada: ${domingo[0]["Hora de llegada"]||""}</div>`);
+  }
+ }
+
+ if(ensayo.length){
+  const titulo=document.querySelector(".rehearsal .title");
+  const f=fechaData(ensayo[0].Fecha);
+  if(titulo && f){
+    titulo.insertAdjacentHTML("beforeend",
+    `<div class="dynamic-info">📅 ${f.dia} ${f.num} de ${f.mes}<br>⏰ Llegada: ${ensayo[0]["Hora de llegada"]||""}</div>`);
+  }
+  const fijo=document.querySelector(".rehearsal .time");
+  if(fijo) fijo.innerHTML="";
+ }
+}
+actualizarTarjetas();
 </script>
 
 </body></html>
