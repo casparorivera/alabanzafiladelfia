@@ -1,0 +1,100 @@
+
+body{
+font-family:Arial,sans-serif;
+background:#f4f6f8;
+margin:0;
+color:#333;
+}
+
+.header{
+background:white;
+display:flex;
+align-items:center;
+gap:15px;
+padding:15px 25px;
+box-shadow:0 2px 8px #ddd;
+}
+
+.header img{
+width:65px;
+height:65px;
+object-fit:contain;
+}
+
+.header h1{
+margin:0;
+font-size:20px;
+color:#204f8c;
+}
+
+.header small{
+font-size:12px;
+}
+
+.container{
+max-width:850px;
+margin:25px auto;
+padding:15px;
+}
+
+.hero{
+background:#204f8c;
+color:white;
+padding:20px;
+border-radius:14px;
+text-align:center;
+}
+
+.hero h2{
+margin:0 0 10px;
+}
+
+.observacion{
+background:#fff1c9;
+padding:18px;
+border-radius:12px;
+margin:20px 0;
+}
+
+.seccion{
+margin-top:25px;
+}
+
+.seccion h2{
+border-bottom:2px solid #ddd;
+padding-bottom:8px;
+color:#204f8c;
+}
+
+.cancion{
+background:white;
+border-radius:12px;
+padding:14px;
+margin:10px 0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 1px 5px #ddd;
+}
+
+.cancion p{
+margin:6px 0 0;
+font-size:14px;
+}
+
+.cancion a{
+background:#204f8c;
+color:white;
+text-decoration:none;
+padding:8px 12px;
+border-radius:8px;
+font-size:14px;
+}
+
+@media(max-width:600px){
+.cancion{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+}

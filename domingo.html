@@ -1,60 +1,92 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Gran Celebración | Ministerio de Alabanza Filadelfia</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gran Celebración - Ministerio de Alabanza Filadelfia</title>
 <link rel="stylesheet" href="domingo.css">
 </head>
 <body>
 
-<header class="top">
-<a class="brand" href="index.html">
-<img src="images/logo-filadelfia.jpg" alt="Logo Ministerio de Alabanza Filadelfia">
-<div><small>MINISTERIO DE ALABANZA</small><b>FILADELFIA CENTRAL</b></div>
-</a>
-<nav>
-<a href="index.html">Inicio</a>
-<a href="cronograma.html">Cronograma</a>
-<a href="chat.html">Chat</a>
-</nav>
+<header class="header">
+  <img src="images/logo-filadelfia.jpg" alt="Logo Ministerio">
+  <div>
+    <small>MINISTERIO DE ALABANZA</small>
+    <h1>FILADELFIA CENTRAL</h1>
+  </div>
 </header>
 
-<main>
+<main class="container">
+
 <section class="hero">
-<span>📖 COLosenses 3:23-24</span>
-<h1>Gran Celebración</h1>
-<h2>Domingo 30 de agosto de 2026</h2>
-<p>
-"Y todo lo que hagáis, hacedlo de corazón, como para el Señor y no para los hombres;
-sabiendo que del Señor recibiréis la recompensa de la herencia, porque a Cristo el Señor servís."
-</p>
+<h2>🎵 Gran Celebración</h2>
+<p id="fecha">Cargando fecha...</p>
 </section>
 
-<section class="songs">
-<h2>🎵 Orden de ministración</h2>
-
-<div class="card"><b>01</b><h3>Contempla a Dios</h3><a target="_blank" href="https://drive.google.com/file/d/1lrh5Ji4LUi5RDL3BRmmaMdFJyKuCWQQM/view?usp=sharing">📄 Abrir Chart</a></div>
-<div class="card"><b>02</b><h3>Glorioso</h3><a target="_blank" href="https://drive.google.com/file/d/1A8oY3WKa2RFY0JrW7cRHOQjGMMGEorp1/view?usp=drive_link">📄 Abrir Chart</a></div>
-<div class="card"><b>03</b><h3>Tu nombre es grande</h3><a target="_blank" href="https://drive.google.com/file/d/1542kLvhOEPaVxFkJDq7LJajrRnrSr3Ly/view?usp=drive_link">📄 Abrir Chart</a></div>
-<div class="card"><b>04</b><h3>Somos libres</h3><a target="_blank" href="https://drive.google.com/file/d/1fj2DPU5pvWj8E28C4a7mGiSHg5LZ7OQI/view?usp=drive_link">📄 Abrir Chart</a></div>
-<div class="card"><b>05</b><h3>Yo danzo</h3><a target="_blank" href="https://drive.google.com/file/d/1R-sU4uHK0LiDaA65TNeKFnLfvqvwQlav/view?usp=drive_link">📄 Abrir Chart</a></div>
-<div class="card"><b>06</b><h3>Danzo en el río</h3><a target="_blank" href="https://drive.google.com/file/d/1Fm7Kptwa0dY2NORjQmx7MpYVOlqGVHTH/view?usp=drive_link">📄 Abrir Chart</a></div>
-<div class="card"><b>07</b><h3>Santo por siempre (Am)</h3><a target="_blank" href="https://drive.google.com/file/d/1XeLAsyVZrvEuoIJv-VCP4L0u7NA1X5BT/view?usp=drive_link">📄 Abrir Chart</a></div>
-
-<div class="note">⚠️ Santo por siempre se une con Ven a habitar en la parte: "Y más que todo hoy queremos". Estar atentos a la transición.</div>
-
-<div class="card"><b>08</b><h3>Ven a habitar</h3><a target="_blank" href="https://drive.google.com/file/d/11HnqmvmFXXMcU3N58u5JnSZTzDGeyhmB/view?usp=drive_link">📄 Abrir Chart</a></div>
-
-<h2>🍞 Cena</h2>
-<div class="card"><b>01</b><h3>Santo es el Señor</h3><a target="_blank" href="https://drive.google.com/file/d/1kiAWt2_T1l2Z__yI6faA5DB8yMrmihXI/view?usp=drive_link">📄 Abrir Chart</a></div>
-
-<h2>🙌 Ofrenda</h2>
-<div class="card"><b>01</b><h3>Nada podrá separarme</h3><a target="_blank" href="https://drive.google.com/file/d/1HFKcbbKRZrQiSERJ2df7gefw9wxQlwco/view?usp=drive_link">📄 Abrir Chart</a></div>
-
+<section class="observacion" id="observacion">
+<h3>📌 Observación general</h3>
+<p>Cargando...</p>
 </section>
+
+<div id="contenido">
+Cargando listado musical...
+</div>
+
 </main>
 
-<footer class="footer">Ministerio de Alabanza Filadelfia Central</footer>
+<script>
+const URL_LISTADO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=0&single=true&output=csv";
+const URL_EVENTO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=146984402&single=true&output=csv";
+
+function parseCSV(text){
+let rows=[],row=[],cell="",quote=false;
+for(let i=0;i<text.length;i++){
+let c=text[i];
+if(c=='"'){if(quote&&text[i+1]=='"'){cell+='"';i++;}else quote=!quote;}
+else if(c==','&&!quote){row.push(cell);cell="";}
+else if((c=='\n'||c=='\r')&&!quote){if(c=='\r'&&text[i+1]=='\n')i++;row.push(cell);rows.push(row);row=[];cell="";}
+else cell+=c;
+}
+if(cell||row.length){row.push(cell);rows.push(row);}
+let headers=rows.shift().map(x=>x.trim());
+return rows.filter(r=>r.length).map(r=>{let o={};headers.forEach((h,i)=>o[h]=r[i]||"");return o;});
+}
+
+async function csv(url){return parseCSV(await (await fetch(url)).text());}
+
+async function cargar(){
+let evento=(await csv(URL_EVENTO))[0];
+document.getElementById("fecha").innerHTML="📅 "+(evento.Fecha||"");
+document.getElementById("observacion").innerHTML="<h3>📌 Observación general</h3><p>"+(evento["Observación general"]||"")+"</p>";
+
+let canciones=await csv(URL_LISTADO);
+let grupos={};
+
+canciones.forEach(c=>{
+let s=c.Sección||"General";
+if(!grupos[s])grupos[s]=[];
+grupos[s].push(c);
+});
+
+let html="";
+for(let s in grupos){
+html+=`<section class="seccion"><h2>${s}</h2>`;
+grupos[s].forEach(c=>{
+html+=`
+<article class="cancion">
+<div>
+<strong>${c.Orden}. ${c.Canción}</strong>
+<p>🎹 ${c.Tonalidad}</p>
+</div>
+<a target="_blank" href="${c["Link PDF"]}">📄 Chart</a>
+</article>`;
+});
+html+="</section>";
+}
+document.getElementById("contenido").innerHTML=html;
+}
+cargar();
+</script>
+
 </body>
 </html>
