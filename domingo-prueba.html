@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gran Celebración - Prueba Google Sheets</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;color:#333}
+.container{max-width:900px;margin:auto;background:white;padding:25px;border-radius:15px}
+h1{text-align:center;color:#1b4d89}
+.evento,.observacion{padding:15px;border-radius:10px;margin-bottom:20px}
+.evento{background:#eef5ff}.observacion{background:#fff4d6}
+.seccion{margin-top:25px}.seccion h2{border-bottom:2px solid #ddd;padding-bottom:8px}
+.cancion{background:#fafafa;padding:15px;margin:10px 0;border-radius:10px;border:1px solid #ddd}
+.boton{display:inline-block;margin-top:10px;background:#1b4d89;color:white;padding:8px 15px;border-radius:8px;text-decoration:none}
+.error{color:red}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🎵 Gran Celebración</h1>
+<div id="evento" class="evento">Cargando información del evento...</div>
+<div id="observacion" class="observacion">Cargando observaciones...</div>
+<div id="listado">Cargando listado musical...</div>
+</div>
+
+<script>
+const URL_LISTADO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=0&single=true&output=csv";
+const URL_EVENTO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=146984402&single=true&output=csv";
+
+async function leerCSV(url){
+ const r=await fetch(url);
+ const t=await r.text();
+ const filas=t.split("\n");
+ const encabezados=filas[0].split(",").map(x=>x.trim());
+ return filas.slice(1).filter(x=>x.trim()).map(f=>{
+  const valores=f.split(",");
+  let o={};
+  encabezados.forEach((c,i)=>o[c]=valores[i]?valores[i].trim():"");
+  return o;
+ });
+}
+
+async function cargarEvento(){
+ try{
+  const datos=await leerCSV(URL_EVENTO);
+  const e=datos[0];
+  document.getElementById("evento").innerHTML=`<h2>${e.Evento||"Gran celebración"}</h2><p>📅 Fecha: ${e.Fecha||""}</p>`;
+  document.getElementById("observacion").innerHTML=`<h3>📌 Observación general</h3><p>${e.Observacion||e["Observación"]||"Sin observaciones"}</p>`;
+ }catch(e){document.getElementById("evento").innerHTML="Error cargando evento";}
+}
+
+async function cargarListado(){
+ try{
+  const canciones=await leerCSV(URL_LISTADO);
+  let grupos={};
+  canciones.forEach(c=>{
+   let s=c.Sección||c.Seccion||"General";
+   if(!grupos[s])grupos[s]=[];
+   grupos[s].push(c);
+  });
+  let html="";
+  Object.keys(grupos).forEach(s=>{
+   html+=`<div class="seccion"><h2>${s}</h2>`;
+   grupos[s].forEach(c=>{
+    const link=c["Link PDF"]||c.Link||"";
+    html+=`<div class="cancion"><h3>${c.Orden||""}. ${c.Canción||c.Cancion||""}</h3><p>🎹 Tonalidad: ${c.Tonalidad||""}</p>${link?`<a class="boton" target="_blank" href="${link}">📄 Ver chart</a>`:""}${(c.Observaciones||c.Observacion)?`<p><strong>Nota:</strong> ${c.Observaciones||c.Observacion}</p>`:""}</div>`;
+   });
+   html+="</div>";
+  });
+  document.getElementById("listado").innerHTML=html;
+ }catch(e){document.getElementById("listado").innerHTML="<p class='error'>Error cargando listado</p>";}
+}
+cargarEvento();
+cargarListado();
+</script>
+</body>
+</html>
