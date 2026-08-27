@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ministerio de Alabanza Filadelfia Central</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+<a class="brand" href="index.html" aria-label="Inicio - Ministerio de Alabanza Filadelfia">
+<img src="images/logo-filadelfia.jpg" alt="Logo Ministerio de Alabanza Filadelfia">
+<div><small>MINISTERIO DE ALABANZA</small><b>FILADELFIA CENTRAL</b></div>
+</a>
+<nav aria-label="Navegación principal">
+<a href="index.html">Inicio</a><a href="edificacion.html">Edificación</a><a href="cronograma.html">Cronograma</a><a href="chat.html">Chat</a>
+</nav>
+</header>
+
+<main id="inicio">
+<section class="hero"><div class="hero-watermark" aria-hidden="true"></div><div class="hero-copy">
+<small>MINISTERIO DE ALABANZA FILADELFIA CENTRAL</small>
+<h1>Alabanza que nace del corazón</h1>
+<p>“Alegraos, oh justos, en Jehová; en los íntegros es hermosa la alabanza.”</p><strong>Salmos 33:1</strong>
+</div></section>
+
+<section class="layout">
+<aside>
+<article class="card blue" id="edificacion"><i>🙏</i><div><h2>Edificación espiritual</h2><p>Reflexiones y contenidos para fortalecer nuestra vida espiritual.</p><a href="edificacion.html">Ver más →</a></div></article>
+<article class="card orange" id="blog"><i>🎙️</i><div><h2>Blog &amp; podcast</h2><p>Enseñanza de alabanza para crecer juntos en el ministerio.</p><a href="blog.html">Ver más →</a></div></article>
+<article class="card green" id="repositorio"><i>🎼</i><div><h2>Repositorio</h2><p>Partituras y charts para consultar y descargar.</p><a href="https://drive.google.com/drive/folders/1z35yxb1EZy5tztIk2u0XXLK3DUbR8K0p?usp=sharing" target="_blank" rel="noopener noreferrer">Ver más →</a></div></article>
+<article class="card purple tall" id="videos"><i>🎹</i><div><h2>Videos de enseñanza</h2><p>Aprende un poco más de tu instrumento y de los solos y armonías de las canciones que interpretamos.</p><a href="videos.html">Ver más →</a></div></article>
+
+<article class="card prayer-request" id="peticiones"><i>🙏</i><div><h2>Haznos conocer tus peticiones de oración</h2><p>Comparte tu petición para que podamos acompañarte en oración como ministerio.</p><a href="peticiones.html">Ver más →</a></div></article>
+<article class="card announcements" id="anuncios"><i>📢</i><div><h2>Anuncios especiales</h2><p>Conoce si hay alguna noticia importante que debamos tener en cuenta durante esta semana.</p><a href="anuncios.html">Ver más →</a></div></article>
+</aside>
+
+<section class="content">
+<article class="schedule" id="cronograma">
+<div class="heading"><span>📅</span><div><small>CRONOGRAMA DEL MES</small><h2 id="mes-cronograma">Cargando...</h2></div></div>
+
+<div class="schedule-grid">
+  <div class="calendar">
+    <div class="days">
+      <b>DOM</b><b>LUN</b><b>MAR</b><b>MIÉ</b><b>JUE</b><b>VIE</b><b>SÁB</b>
+    </div>
+    <div class="dates" id="calendario-dinamico">
+      <span class="calendar-loading">Cargando actividades...</span>
+    </div>
+  </div>
+
+  <div class="info" id="resumen-semanal">
+    <div><b>📅 Actividades de esta semana</b><small>Consultando Google Calendar...</small></div>
+  </div>
+</div>
+
+<a href="cronograma.html">Ver más →</a>
+</article>
+
+<article class="list sunday"><div class="date">📖<b>DOMINGO<br><strong class="dynamic-day"></strong><br><span class="dynamic-month"></span></b></div><div class="title"><small>LISTADO DE MINISTRACIÓN</small><h2>Gran celebración</h2></div><div class="songs"><span>1</span>Digno es el Señor <span>4</span>Eres mi todo <span>2</span>Qué hermoso es tu nombre <span>5</span>Tu fidelidad <span>3</span>Rey de gloria <span>6</span>Bondad de Dios</div><a href="domingo.html">Ver más →</a></article>
+
+<article class="list rehearsal">
+<div class="bigicon">🎼</div>
+<div class="title"><small>LISTADO DE</small><h2>ENSAYO</h2></div>
+<div class="songs"></div>
+<div class="time dynamic-arrival"></div>
+<a href="ensayo.html">Ver más →</a>
+</article>
+
+
+
+
+<article class="list rehearsal additional">
+<div class="bigicon">🤝</div>
+<div class="title">
+<small>INFORMACIÓN DE</small>
+<h2>REUNIONES<br>ADICIONALES</h2>
+<div class="additional-data">
+<strong class="nombre-adicional">Cargando...</strong>
+<div class="llegada-adicional"></div>
+</div>
+</div>
+<a href="adicional.html">Ver más →</a>
+</article>
+</section></section>
+
+<section class="community">
+<article class="community-box chat"><span>💬</span><div><h2>CONÉCTATE</h2><p>al <b>CHAT GRUPAL</b></p><a href="chat.html">Ver más →</a></div></article>
+<article class="community-box ai"><span>🤖📖</span><div><h2>HABLA CON NUESTRA <em>IA</em></h2><p>y entra a la <b>BIBLIA GRUPAL</b></p><a href="ia-biblia.html">Ver más →</a></div></article>
+</section>
+</main>
+
+<footer class="footer"><p>Saludos, estás en la página del <strong>Ministerio de Alabanza Filadelfia</strong>.</p><p>Espero que sea un tiempo edificante para tu vida.</p><p>¡Nos vemos pronto!</p></footer>
+
+
+
+<script>
+/* =========================================================
+   CRONOGRAMA DINÁMICO — Google Calendar / Apps Script
+   Solo controla la sección #cronograma.
+   ========================================================= */
+const URL_CALENDARIO_FILADELFIA =
+  "https://script.google.com/macros/s/AKfycbxTDcUHPnNVGOGsc2VEJ0WgZzKs42RGuqGXC6XKWkkO6YBo5_xmBPXNzfRY3Kcu8tXY/exec";
+
+const TZ_FILADELFIA = "America/Bogota";
+
+const DIAS = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio",
+               "agosto","septiembre","octubre","noviembre","diciembre"];
+
+function textoNormalizado(t){
+  return (t || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .trim();
+}
+
+/* Convierte el instante entregado por Google en fecha/hora de Colombia.
+   No se hace una resta manual de horas: Intl aplica UTC-5 correctamente. */
+function partesColombia(iso){
+  const d = new Date(iso);
+  if (isNaN(d)) return null;
+
+  const partes = new Intl.DateTimeFormat("en-US", {
+    timeZone: TZ_FILADELFIA,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).formatToParts(d);
+
+  const o = {};
+  partes.forEach(p => { if (p.type !== "literal") o[p.type] = p.value; });
+
+  return {
+    date: `${o.year}-${o.month}-${o.day}`,
+    year: Number(o.year),
+    month: Number(o.month) - 1,
+    day: Number(o.day),
+    hour: Number(o.hour) === 24 ? 0 : Number(o.hour),
+    minute: Number(o.minute)
+  };
+}
+
+function claveFecha(y,m,d){
+  return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+}
+
+function etiquetaHora(iso){
+  const p = partesColombia(iso);
+  if (!p) return "";
+  const h = p.hour % 12 || 12;
+  const min = String(p.minute).padStart(2,"0");
+  const sufijo = p.hour >= 12 ? "p. m." : "a. m.";
+  return `${h}:${min} ${sufijo}`;
+}
+
+function clasificarEvento(titulo){
+  const n = textoNormalizado(titulo);
+
+  if (n.includes("ensayo")) return {
+    clase: "rehearsal-day",
+    icono: "🎵",
+    nombre: "Ensayo"
+  };
+
+  if (n.includes("gran celebracion")) return {
+    clase: "sun",
+    icono: "🙏",
+    nombre: "Gran celebración"
+  };
+
+  if (n.includes("reunion virtual")) return {
+    clase: "virtual",
+    icono: "💻",
+    nombre: "Reunión virtual"
+  };
+
+  if (n.includes("oracion") || n.includes("reunion de oracion")) return {
+    clase: "prayer",
+    icono: "🙏",
+    nombre: "Reunión de oración"
+  };
+
+  if (n.includes("podcast")) return {
+    clase: "podcast",
+    icono: "🎙️",
+    nombre: "Podcast"
+  };
+
+  return {
+    clase: "activity",
+    icono: "📌",
+    nombre: titulo || "Actividad"
+  };
+}
+
+function nombreDiaCorto(fecha){
+  return DIAS[fecha.getDay()].slice(0,3).toUpperCase();
+}
+
+function fechaLegibleLocal(iso){
+  const p = partesColombia(iso);
+  if (!p) return "";
+  const d = new Date(Date.UTC(p.year,p.month,p.day));
+  return `${DIAS[d.getUTCDay()].slice(0,3)} ${p.day}`;
+}
+
+function construirEvento(raw){
+  const titulo = raw.titulo || raw.title || raw.nombre || "Actividad";
+  const inicio = raw.inicio || raw.start || raw.fechaInicio;
+  if (!inicio) return null;
+
+  const p = partesColombia(inicio);
+  if (!p) return null;
+
+  return {
+    titulo,
+    inicio,
+    fin: raw.fin || raw.end || "",
+    fecha: p,
+    clave: p.date,
+    hora: etiquetaHora(inicio),
+    tipo: clasificarEvento(titulo)
+  };
+}
+
+function rangoMesActual(){
+  const ahora = new Date();
+  const p = new Intl.DateTimeFormat("en-US", {
+    timeZone: TZ_FILADELFIA,
+    year:"numeric",
+    month:"numeric"
+  }).formatToParts(ahora);
+
+  const y = Number(p.find(x=>x.type==="year").value);
+  const m = Number(p.find(x=>x.type==="month").value)-1;
+  return {y,m};
+}
+
+function fechaActualColombia(){
+  const ahora = new Date();
+  const p = new Intl.DateTimeFormat("en-US", {
+    timeZone: TZ_FILADELFIA,
+    year:"numeric", month:"2-digit", day:"2-digit"
+  }).formatToParts(ahora);
+
+  return new Date(
+    Number(p.find(x=>x.type==="year").value),
+    Number(p.find(x=>x.type==="month").value)-1,
+    Number(p.find(x=>x.type==="day").value)
+  );
+}
+
+function renderCalendario(eventos){
+  const cont = document.getElementById("calendario-dinamico");
+  const tituloMes = document.getElementById("mes-cronograma");
+  if (!cont || !tituloMes) return;
+
+  const {y,m} = rangoMesActual();
+  tituloMes.textContent =
+    `${MESES[m][0].toUpperCase()+MESES[m].slice(1)} ${y}`;
+
+  cont.innerHTML = "";
+
+  const primerDia = new Date(y,m,1).getDay();
+  const totalDias = new Date(y,m+1,0).getDate();
+
+  for(let i=0;i<primerDia;i++){
+    const vacio = document.createElement("span");
+    vacio.className = "calendar-empty";
+    cont.appendChild(vacio);
+  }
+
+  const porDia = {};
+  eventos.forEach(ev => {
+    if(ev.fecha.year === y && ev.fecha.month === m){
+      (porDia[ev.clave] ||= []).push(ev);
+    }
+  });
+
+  const hoy = fechaActualColombia();
+  const hoyClave = claveFecha(hoy.getFullYear(),hoy.getMonth(),hoy.getDate());
+
+  for(let dia=1;dia<=totalDias;dia++){
+    const celda = document.createElement("span");
+    const clave = claveFecha(y,m,dia);
+    const lista = porDia[clave] || [];
+
+    if(clave === hoyClave) celda.classList.add("today");
+
+    if(lista.length){
+      celda.classList.add(lista[0].tipo.clase);
+
+      const numero = document.createElement("strong");
+      numero.textContent = dia;
+      celda.appendChild(numero);
+
+      const listaVisual = document.createElement("div");
+      listaVisual.className = "calendar-events";
+
+      lista.slice(0,3).forEach(ev => {
+        const em = document.createElement("em");
+        em.innerHTML =
+          `<span class="mini-icon">${ev.tipo.icono}</span>${ev.titulo}` +
+          (ev.hora ? ` · ${ev.hora}` : "");
+        listaVisual.appendChild(em);
+      });
+
+      if(lista.length > 3){
+        const mas = document.createElement("em");
+        mas.textContent = `+${lista.length-3} actividades`;
+        listaVisual.appendChild(mas);
+      }
+
+      celda.appendChild(listaVisual);
+    } else {
+      celda.textContent = dia;
+    }
+
+    cont.appendChild(celda);
+  }
+}
+
+function renderResumenSemanal(eventos){
+  const cont = document.getElementById("resumen-semanal");
+  if(!cont) return;
+
+  cont.innerHTML = "";
+
+  const hoy = fechaActualColombia();
+  hoy.setHours(0,0,0,0);
+
+  const limite = new Date(hoy);
+  limite.setDate(limite.getDate()+7);
+
+  const proximos = eventos
+    .filter(ev => {
+      const d = new Date(ev.fecha.year,ev.fecha.month,ev.fecha.day);
+      return d >= hoy && d < limite;
+    })
+    .sort((a,b) => {
+      const da = new Date(a.fecha.year,a.fecha.month,a.fecha.day,a.fecha.hour,a.fecha.minute);
+      const db = new Date(b.fecha.year,b.fecha.month,b.fecha.day,b.fecha.hour,b.fecha.minute);
+      return da-db;
+    })
+    .slice(0,5);
+
+  if(!proximos.length){
+    cont.innerHTML =
+      `<div><b>📅 Actividades de esta semana</b>` +
+      `<small>No hay actividades programadas en los próximos 7 días.</small></div>`;
+    return;
+  }
+
+  proximos.forEach(ev => {
+    const card = document.createElement("div");
+    card.className = "week-item";
+
+    const dia = fechaLegibleLocal(ev.inicio);
+    const resumen = ev.titulo;
+
+    card.innerHTML =
+      `<b>${ev.tipo.icono} ${ev.tipo.nombre}</b>` +
+      `<small>${dia} · ${resumen}${ev.hora ? " · " + ev.hora : ""}</small>`;
+
+    cont.appendChild(card);
+  });
+}
+
+async function cargarCronogramaDinamico(){
+  try{
+    const respuesta = await fetch(URL_CALENDARIO_FILADELFIA, {cache:"no-store"});
+    if(!respuesta.ok) throw new Error("No se pudo consultar Google Calendar.");
+
+    const datos = await respuesta.json();
+
+    const crudos = Array.isArray(datos.eventos) ? datos.eventos : [];
+    const eventos = crudos
+      .map(construirEvento)
+      .filter(Boolean);
+
+    renderCalendario(eventos);
+    renderResumenSemanal(eventos);
+
+  }catch(error){
+    console.error("Cronograma:", error);
+
+    const cal = document.getElementById("calendario-dinamico");
+    const resumen = document.getElementById("resumen-semanal");
+
+    if(cal){
+      cal.innerHTML =
+        `<span class="calendar-error">No se pudo cargar el calendario.</span>`;
+    }
+
+    if(resumen){
+      resumen.innerHTML =
+        `<div><b>📅 Actividades de esta semana</b>` +
+        `<small>Revisa la conexión con Google Calendar.</small></div>`;
+    }
+  }
+}
+
+cargarCronogramaDinamico();
+</script>
+
+<style>
+/* Estilos exclusivos del cronograma dinámico */
+#cronograma > .schedule-grid{align-items:stretch}
+#cronograma .dates > span{
+  position:relative;
+  overflow:hidden;
+}
+#cronograma .dates > span > strong{
+  display:block;
+  font-weight:500;
+}
+#cronograma .calendar-events{
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+  margin-top:2px;
+}
+#cronograma .calendar-events em{
+  display:block;
+  font-style:normal;
+  line-height:1.12;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#cronograma .mini-icon{font-size:.9em}
+#cronograma .today{
+  box-shadow:inset 0 0 0 2px #ff7650;
+}
+#cronograma .activity{
+  background:rgba(255,246,235,.85);
+}
+#cronograma .info{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#cronograma .info > div{
+  min-height:0;
+}
+#cronograma .info b{
+  display:block;
+}
+#cronograma .info small{
+  display:block;
+  margin-top:4px;
+  line-height:1.25;
+}
+#cronograma .calendar-loading,
+#cronograma .calendar-error{
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:180px;
+}
+#cronograma > a{
+  display:inline-block;
+  margin-top:10px;
+}
+@media (max-width:900px){
+  #cronograma .calendar-events em{
+    font-size:.72em;
+  }
+}
+</style>
+
+</body></html>
