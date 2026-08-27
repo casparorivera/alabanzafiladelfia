@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reunión adicional - Ministerio de Alabanza Filadelfia</title>
+<link rel="stylesheet" href="ensayo.css">
+</head>
+<body>
+
+<header class="header">
+<img src="images/logo-filadelfia.jpg" alt="Logo Ministerio">
+<div>
+<small>MINISTERIO DE ALABANZA</small>
+<h1>FILADELFIA CENTRAL</h1>
+</div>
+</header>
+
+<main class="container">
+
+<section class="hero">
+<h2 id="tituloEvento">📌 Reunión adicional</h2>
+<p id="fecha">Cargando fecha...</p>
+<p id="hora"></p>
+</section>
+
+<section class="observacion" id="observacion">
+<h3>📌 Observación general</h3>
+<p>Cargando...</p>
+</section>
+
+<div id="contenido">Cargando información...</div>
+
+</main>
+
+<script>
+const URL_REUNION="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=1379530761&single=true&output=csv";
+const URL_EVENTO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=146984402&single=true&output=csv";
+
+function parseCSV(t){
+let rows=[],r=[],c="",q=false;
+for(let i=0;i<t.length;i++){
+let x=t[i];
+if(x=='"'){q=!q;}
+else if(x==','&&!q){r.push(c);c="";}
+else if((x=='\n'||x=='\r')&&!q){if(x=='\r'&&t[i+1]=='\n')i++;r.push(c);rows.push(r);r=[];c="";}
+else c+=x;
+}
+if(c||r.length){r.push(c);rows.push(r);}
+let h=rows.shift().map(x=>x.trim());
+return rows.filter(x=>x.length).map(row=>{let o={};h.forEach((k,i)=>o[k]=(row[i]||"").trim());return o;});
+}
+
+async function leer(url){
+return parseCSV(await (await fetch(url)).text());
+}
+
+async function cargar(){
+
+let canciones=await leer(URL_REUNION);
+
+if(!canciones.length){
+document.getElementById("contenido").innerHTML=
+`<div class="sin-info">📌 <strong>No hay reuniones adicionales durante esta semana.</strong></div>`;
+document.getElementById("observacion").innerHTML="";
+return;
+}
+
+let primera=canciones[0];
+
+document.getElementById("tituloEvento").innerHTML="📌 "+(primera.Evento||"Reunión adicional");
+document.getElementById("fecha").innerHTML="📅 "+(primera.Fecha||"");
+
+if(primera["Hora de llegada"]){
+document.getElementById("hora").innerHTML="⏰ Hora de llegada: "+primera["Hora de llegada"];
+}
+
+let eventos=await leer(URL_EVENTO);
+
+let eventoEncontrado=eventos.find(e=>
+e.Evento===primera.Evento &&
+e.Fecha===primera.Fecha
+);
+
+document.getElementById("observacion").innerHTML=
+`<h3>📌 Observación general</h3>
+<p>${eventoEncontrado ? (eventoEncontrado["Observación general"]||"Sin observaciones") : "Sin observaciones"}</p>`;
+
+let html=`<section class="seccion"><h2>🎵 Listado</h2>`;
+
+canciones.forEach(c=>{
+html+=`
+<article class="cancion">
+<div>
+<strong>${c.Orden||""}. ${c.Canción||""}</strong>
+<p>🎹 Tonalidad: ${c.Tonalidad||""}</p>
+</div>
+<a target="_blank" href="${c["Link PDF"]||"#"}">📄 Chart</a>
+${c.Observaciones ? `<div class="nota">⚠️ <strong>Observación:</strong><br>${c.Observaciones}</div>` : ""}
+</article>`;
+});
+
+html+="</section>";
+document.getElementById("contenido").innerHTML=html;
+
+}
+
+cargar();
+</script>
+
+</body>
+</html>
