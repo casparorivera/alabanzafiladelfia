@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anuncios especiales — Ministerio de Alabanza Filadelfia</title>
+<style>
+:root{--blue:#1769aa;--blue-dark:#0f4f82;--ink:#263238;--muted:#66727a;--paper:#fff;--line:#e2e8ec}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:linear-gradient(180deg,#f7fafc 0%,#eef3f6 100%)}
+.page{width:min(920px,calc(100% - 32px));margin:38px auto 50px}
+.header{background:var(--blue);color:#fff;border-radius:18px;padding:25px 28px;box-shadow:0 8px 24px rgba(25,55,75,.12);display:flex;align-items:center;gap:16px}
+.header-icon{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:27px;flex:0 0 auto}
+.header h1{margin:0;font-size:27px;line-height:1.15}
+.header p{margin:5px 0 0;font-size:13px;opacity:.9}
+.anuncios{margin-top:22px;display:flex;flex-direction:column;gap:15px}
+.anuncio{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 23px;box-shadow:0 5px 18px rgba(25,55,75,.07)}
+.anuncio h2{margin:0 0 9px;font-size:19px;line-height:1.25;font-weight:800;color:var(--blue-dark)}
+.anuncio p{margin:0;font-size:15px;line-height:1.6;color:var(--ink);white-space:pre-line}
+.estado{background:#fff;border:1px dashed #ccd6dc;border-radius:16px;padding:28px;text-align:center;color:var(--muted)}
+.volver{display:inline-block;margin-top:22px;padding:9px 15px;border-radius:22px;background:var(--blue);color:#fff;text-decoration:none;font-size:12px;font-weight:700}
+@media(max-width:600px){.page{width:calc(100% - 20px);margin-top:20px}.header{padding:21px}.header h1{font-size:23px}.anuncio{padding:17px 18px}.anuncio h2{font-size:18px}.anuncio p{font-size:14px}}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="header"><div class="header-icon">📢</div><div><h1>Anuncios especiales</h1><p>Información importante para nuestro ministerio</p></div></header>
+<section class="anuncios" id="anuncios"><div class="estado">Cargando anuncios...</div></section>
+<a class="volver" href="index.html">← Volver al inicio</a>
+</main>
+<script>
+(() => {
+const URL_ANUNCIOS = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=829201223&single=true&output=csv';
+function parseCSV(text){
+ const rows=[];let row=[],cell="",quoted=false;
+ for(let i=0;i<text.length;i++){const c=text[i];
+  if(c==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++}else quoted=!quoted}
+  else if(c===','&&!quoted){row.push(cell.trim());cell=""}
+  else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell.trim());if(row.some(v=>v!==""))rows.push(row);row=[];cell=""}
+  else cell+=c;
+ }
+ if(cell!==""||row.length){row.push(cell.trim());if(row.some(v=>v!==""))rows.push(row)}
+ if(rows.length<2)return[];
+ const headers=rows.shift().map(v=>v.replace(/^"|"$/g,"").trim().toLowerCase());
+ return rows.map(r=>{const o={};headers.forEach((h,i)=>o[h]=(r[i]||"").replace(/^"|"$/g,"").trim());return o});
+}
+function mostrar(datos){
+ const cont=document.getElementById("anuncios");
+ const lista=datos.filter(x=>(x.título||x.titulo||"").trim()||(x.anuncio||"").trim());
+ cont.innerHTML="";
+ if(!lista.length){cont.innerHTML='<div class="estado">No hay anuncios publicados en este momento.</div>';return}
+ lista.forEach(x=>{
+  const a=document.createElement("article");a.className="anuncio";
+  const t=(x.título||x.titulo||"").trim(),n=(x.anuncio||"").trim();
+  if(t){const h=document.createElement("h2");h.textContent=t;a.appendChild(h)}
+  if(n){const p=document.createElement("p");p.textContent=n;a.appendChild(p)}
+  cont.appendChild(a);
+ });
+}
+async function cargar(){
+ try{
+  const r=await fetch(URL_ANUNCIOS+"&_="+Date.now(),{cache:"no-store"});
+  if(!r.ok)throw new Error("No se pudo consultar Anuncios");
+  mostrar(parseCSV(await r.text()));
+ }catch(e){console.error("Anuncios:",e);document.getElementById("anuncios").innerHTML='<div class="estado">No se pudieron cargar los anuncios.</div>'}
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",cargar,{once:true});else cargar();
+})();
+</script>
+</body>
+</html>
