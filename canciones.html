@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canciones de Alabanza</title>
+<style>
+:root{--azul:#1769aa;--oscuro:#123d68;--claro:#eef6ff;--borde:#d8e5ef;--texto:#18344f;--gris:#687f92}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#f4f9fd,#edf4f8);color:var(--texto)}
+.contenedor{max-width:1050px;margin:auto;padding:28px 20px 55px}
+.encabezado,.cancion{background:#fff;border:1px solid var(--borde);border-radius:22px;box-shadow:0 8px 25px rgba(18,61,104,.07)}
+.encabezado{padding:28px 32px;margin-bottom:20px}
+.etiqueta{color:#2874b8;font-weight:700;letter-spacing:1.4px;font-size:12px}
+h1{font-family:Georgia,serif;color:var(--oscuro);font-size:40px;margin:8px 0}
+.subtitulo{margin:0;color:var(--gris);line-height:1.5}
+.estado{padding:12px 16px;margin:0 0 16px;border-radius:13px;background:#fff;border:1px solid var(--borde);font-size:13px;color:var(--gris)}
+.lista{display:grid;gap:16px}
+.cancion{padding:20px 22px}
+.cabeza{display:flex;gap:14px;align-items:center}
+.icono{width:46px;height:46px;border-radius:50%;background:var(--claro);display:flex;align-items:center;justify-content:center;font-size:23px;flex:none}
+.titulo{margin:0;color:var(--oscuro);font-size:21px}
+audio{width:100%;margin-top:16px;height:44px}
+.controles{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.controles span{font-size:13px;color:var(--gris);font-weight:700}
+.velocidad{border:1px solid var(--borde);background:#f8fbfd;border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--texto);font-weight:700}
+.velocidad.activo{background:var(--azul);color:#fff;border-color:var(--azul)}
+.acciones{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}
+.accion{text-decoration:none;border-radius:9px;padding:9px 13px;font-size:13px;font-weight:700;border:1px solid var(--borde);color:var(--texto);background:#f8fbfd}
+.accion.principal{background:var(--azul);border-color:var(--azul);color:#fff}
+.estudio{margin-top:14px;padding:11px 13px;background:#f7fafc;border-radius:11px;color:var(--gris);font-size:13px}
+.vacio{padding:30px;text-align:center;color:var(--gris)}
+@media(max-width:650px){h1{font-size:32px}.encabezado{padding:24px}}
+</style>
+</head>
+<body>
+<div class="contenedor">
+<header class="encabezado">
+  <div class="etiqueta">MINISTERIO DE ALABANZA FILADELFIA CENTRAL</div>
+  <h1>🎧 Canciones de Alabanza</h1>
+  <p class="subtitulo">Escucha las canciones para los montajes del ministerio de alabanza.</p>
+</header>
+
+<div id="estado" class="estado">Cargando canciones...</div>
+<section id="lista" class="lista"></section>
+</div>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=14478083&single=true&output=csv";
+const DATOS_RESPALDO = [{"titulo": "Tu eres Digno Aleluya", "enlace": "https://drive.google.com/file/d/1yFh0KZpMiSOar2zfYxbCciZOkA2cHnX9/view?usp=sharing", "estudio": ""}, {"titulo": "Dios es la fuerza de mi corazón", "enlace": "https://drive.google.com/file/d/18_TO7Jqb0YtoGCCO4YYP99OfmyacCjdz/view?usp=sharing", "estudio": ""}, {"titulo": "Mi esperanza está en Dios", "enlace": "https://drive.google.com/file/d/1Y3Jd7Ug6liuKVHUSiNYAOeqhzQ_4s1Fo/view?usp=sharing", "estudio": ""}, {"titulo": "Tu nombre es grande", "enlace": "https://drive.google.com/file/d/1jk-HPwuTuzZIZgmlIxQxq9S1gp-3dK0j/view?usp=sharing", "estudio": ""}, {"titulo": "Tuya la gloria es", "enlace": "https://drive.google.com/file/d/1C_Mb1AszK6RDDI0TZubJ9mJ6PGSnTWOM/view?usp=sharing", "estudio": ""}, {"titulo": "Yo danzo", "enlace": "https://drive.google.com/file/d/1-6bB-VcXK9ZXIbopA04NNqR8bs7MzHu4/view?usp=sharing", "estudio": ""}];
+
+function normalizarClave(s) {
+  return String(s || "")
+    .replace(/^\ufeff/, "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().replace(/[^a-z0-9]/g,"");
+}
+
+function parseCSV(text) {
+  const filas=[]; let fila=[], celda="", comillas=false;
+  for(let i=0;i<text.length;i++) {
+    const c=text[i], n=text[i+1];
+    if(c === '"') {
+      if(comillas && n === '"') { celda+='"'; i++; }
+      else comillas=!comillas;
+    } else if(c === "," && !comillas) {
+      fila.push(celda); celda="";
+    } else if((c === "\n" || c === "\r") && !comillas) {
+      if(c === "\r" && n === "\n") i++;
+      fila.push(celda); celda="";
+      if(fila.some(x=>String(x).trim()!=="")) filas.push(fila);
+      fila=[];
+    } else celda+=c;
+  }
+  if(celda!=="" || fila.length) { fila.push(celda); if(fila.some(x=>String(x).trim()!=="")) filas.push(fila); }
+  if(!filas.length) return [];
+
+  const encabezados=filas[0].map(normalizarClave);
+  const buscar=(...nombres)=> {
+    for(const nombre of nombres) {
+      const i=encabezados.indexOf(normalizarClave(nombre));
+      if(i>=0) return i;
+    }
+    return -1;
+  };
+
+  const it=buscar("Título","Titulo");
+  const ie=buscar("Enlace","Link","URL");
+  const is=buscar("Estudio");
+
+  if(it<0) throw new Error("No se encontró la columna Título.");
+  return filas.slice(1).map(f=>({
+    titulo:String(f[it]||"").trim(),
+    enlace:ie>=0?String(f[ie]||"").trim():"",
+    estudio:is>=0?String(f[is]||"").trim():""
+  })).filter(x=>x.titulo);
+}
+
+function driveId(url) {
+  const m=String(url||"").match(/\/d\/([a-zA-Z0-9_-]+)/) ||
+          String(url||"").match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : "";
+}
+
+function audioUrl(url) {
+  const id=driveId(url);
+  return id ? "https://drive.google.com/uc?export=download&id="+id : url;
+}
+
+function esc(s) {
+  return String(s||"").replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[m]);
+}
+
+function crearCancion(c,i) {
+  const article=document.createElement("article");
+  article.className="cancion";
+  const src=audioUrl(c.enlace);
+
+  article.innerHTML=`
+    <div class="cabeza">
+      <div class="icono">🎵</div>
+      <h2 class="titulo">${esc(c.titulo)}</h2>
+    </div>
+    <audio id="audio-${i}" controls preload="none" src="${esc(src)}"></audio>
+    <div class="controles">
+      <span>Velocidad:</span>
+      <button class="velocidad" data-speed="0.75">0.75×</button>
+      <button class="velocidad activo" data-speed="1">1×</button>
+      <button class="velocidad" data-speed="1.25">1.25×</button>
+      <button class="velocidad" data-speed="1.5">1.5×</button>
+      <button class="velocidad" data-speed="2">2×</button>
+    </div>
+    <div class="acciones">
+      <a class="accion principal" href="${esc(c.enlace)}" target="_blank" rel="noopener">▶ Abrir canción</a>
+      <a class="accion" href="${esc(c.enlace)}" target="_blank" rel="noopener">☁ Ver en Drive</a>
+    </div>
+    <div class="estudio"><strong>🎼 Estudio:</strong> ${c.estudio ? esc(c.estudio) : "Próximamente"}</div>
+  `;
+
+  const audio=article.querySelector("audio");
+  article.querySelectorAll("[data-speed]").forEach(b=>b.addEventListener("click",()=>{
+    audio.playbackRate=Number(b.dataset.speed);
+    article.querySelectorAll("[data-speed]").forEach(x=>x.classList.remove("activo"));
+    b.classList.add("activo");
+  }));
+  return article;
+}
+
+async function cargar() {
+  const lista=document.getElementById("lista");
+  const estado=document.getElementById("estado");
+  let canciones=[];
+  let dinamico=true;
+
+  try {
+    const respuesta=await fetch(CSV_URL+"&_="+Date.now(),{cache:"no-store"});
+    if(!respuesta.ok) throw new Error("HTTP "+respuesta.status);
+    canciones=parseCSV(await respuesta.text());
+    if(!canciones.length) throw new Error("CSV vacío");
+  } catch(e) {
+    // Respaldo de los datos comprobados del CSV entregado.
+    canciones=DATOS_RESPALDO;
+    dinamico=false;
+    console.warn("No se pudo consultar el CSV en este navegador. Se usa respaldo:",e);
+  }
+
+  lista.innerHTML="";
+  canciones.forEach((c,i)=>lista.appendChild(crearCancion(c,i)));
+
+  estado.textContent = canciones.length+" canciones disponibles"+
+    (dinamico ? " · datos actualizados desde la base musical." :
+               " · se muestran los datos de respaldo; al publicar el HTML en el sitio se consultará la base automáticamente.");
+}
+
+cargar();
+</script>
+</body>
+</html>
