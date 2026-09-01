@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Edificación Espiritual | Filadelfia Central</title>
+<link rel="stylesheet" href="edificacion.css">
+
+<style>
+/* ===== Diseño de las reflexiones ===== */
+.reflection-list{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.reflection-card{
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:72px 1fr;
+  gap:20px;
+  padding:24px;
+  border-radius:20px;
+  background:#fff;
+  border:1px solid #e4ebf3;
+  box-shadow:0 10px 28px rgba(17,52,86,.08);
+}
+
+.reflection-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:5px;
+  background:linear-gradient(180deg,#0b3b78,#ef7148);
+}
+
+.prayer-icon{
+  width:64px;
+  height:64px;
+  border-radius:19px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#eef6ff,#f9fbff);
+  border:1px solid #d8e7f7;
+  box-shadow:0 8px 20px rgba(11,59,120,.10);
+  color:#0b3b78;
+}
+
+.prayer-icon svg{
+  width:39px;
+  height:39px;
+}
+
+.reflection-date{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 10px;
+  padding:8px 13px;
+  border-radius:999px;
+  background:#fff2ec;
+  color:#d85e36;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.07em;
+}
+
+.reflection-title{
+  margin:0;
+  color:#0b3b78;
+  font-size:25px;
+  line-height:1.18;
+}
+
+.reflection-description{
+  margin:9px 0 17px;
+  color:#68788c;
+  font-size:14px;
+  line-height:1.55;
+  max-width:760px;
+}
+
+.player-box{
+  padding:14px 15px 12px;
+  border-radius:16px;
+  background:#f7fafd;
+  border:1px solid #e0e8f1;
+}
+
+.player-label{
+  margin-bottom:8px;
+  color:#0b3b78;
+  font-size:12px;
+  font-weight:800;
+}
+
+.player-box audio{
+  display:block;
+  width:100%;
+  height:42px;
+}
+
+.audio-status{
+  margin-top:7px;
+  color:#7b8794;
+  font-size:11px;
+}
+
+.audio-status.ok{color:#2a7b4d}
+.audio-status.error{color:#b54834}
+
+.loading-box,
+.empty-box,
+.error-box{
+  padding:22px;
+  border-radius:17px;
+  background:#f7fafd;
+  border:1px solid #e1e9f2;
+  color:#66758a;
+  text-align:center;
+  font-size:13px;
+}
+
+.error-box{
+  color:#b54834;
+  background:#fff7f4;
+}
+
+@media (max-width:700px){
+  .reflection-card{
+    grid-template-columns:1fr;
+    gap:13px;
+    padding:20px;
+  }
+
+  .prayer-icon{
+    width:57px;
+    height:57px;
+  }
+
+  .reflection-title{
+    font-size:21px;
+  }
+}
+</style>
+</head>
+
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span>MINISTERIO DE ALABANZA</span>
+    <strong>FILADELFIA CENTRAL</strong>
+  </a>
+  <nav>
+    <a href="index.html">Inicio</a>
+    <a href="edificacion.html">Edificación</a>
+    <a href="cronograma.html">Cronograma</a>
+    <a href="chat.html">Chat</a>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="eyebrow">EDIFICACIÓN ESPIRITUAL</div>
+    <h1>Reflexiones para fortalecer nuestra vida espiritual</h1>
+    <p>Un espacio para escuchar, meditar y crecer juntos en nuestra relación con Dios.</p>
+  </section>
+
+  <section id="listaReflexiones" class="reflection-list">
+    <div class="loading-box">Cargando reflexiones…</div>
+  </section>
+
+  <a class="back" href="index.html">← Volver al inicio</a>
+</main>
+
+<script>
+/*
+  Pestaña Edificación
+  Columnas: fecha | título | descripción | enlace
+
+  Los datos se consultan mediante Apps Script.
+  El enlace de cada fila es el enlace de Cloudflare que
+  apunta al audio almacenado en Backblaze.
+*/
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbzXj4-eY-NSrNjnw3ijQ7L4jij-8xLJQEo_3QnAiPU37USG5tgMktR_ABU1FpBl0KFAGQ/exec";
+
+const lista = document.getElementById("listaReflexiones");
+
+function parseCSV(text){
+  const rows=[];
+  let row=[], cell="", quoted=false;
+
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+
+    if(c === '"'){
+      if(quoted && text[i+1] === '"'){
+        cell += '"';
+        i++;
+      }else{
+        quoted = !quoted;
+      }
+    }else if(c === "," && !quoted){
+      row.push(cell.trim());
+      cell="";
+    }else if((c === "\n" || c === "\r") && !quoted){
+      if(c === "\r" && text[i+1] === "\n") i++;
+      row.push(cell.trim());
+      if(row.some(v => v !== "")) rows.push(row);
+      row=[];
+      cell="";
+    }else{
+      cell += c;
+    }
+  }
+
+  row.push(cell.trim());
+  if(row.some(v => v !== "")) rows.push(row);
+
+  return rows;
+}
+
+function normalizar(s){
+  return String(s || "")
+    .replace(/^\ufeff/,"")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .trim();
+}
+
+function fechaValor(s){
+  const v=String(s || "").trim();
+
+  let m=v.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if(m){
+    return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+  }
+
+  m=v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(m){
+    return new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+  }
+
+  const d=new Date(v);
+  return isNaN(d) ? new Date(0) : d;
+}
+
+function formatearFecha(s){
+  const d=fechaValor(s);
+
+  if(d.getTime()===0){
+    return String(s || "");
+  }
+
+  return d.toLocaleDateString("es-CO",{
+    day:"2-digit",
+    month:"long",
+    year:"numeric"
+  }).toUpperCase();
+}
+
+function escaparHTML(s){
+  return String(s || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+/* Ícono vectorial de oración */
+function iconoOracion(){
+  return `
+    <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M32 53c-2.8-8.2-3.2-16.9-1.2-25.1 1.2-5 3.8-9.6 7.7-13.5"
+        stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M32 53c2.8-8.2 3.2-16.9 1.2-25.1-1.2-5-3.8-9.6-7.7-13.5"
+        stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M38.5 14.5c4.2-3 8.6-2.6 11 .5 2.4 3.1 1.2 7.2-2.8 9.5-3.5 2-7.5 1.1-9.7-1.7"
+        stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M25.5 14.5c-4.2-3-8.6-2.6-11 .5-2.4 3.1-1.2 7.2 2.8 9.5 3.5 2 7.5 1.1 9.7-1.7"
+        stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>`;
+}
+
+function pintar(datos){
+  if(!datos.length){
+    lista.innerHTML=`
+      <div class="empty-box">
+        No hay reflexiones disponibles en este momento.
+      </div>`;
+    return;
+  }
+
+  /* Las más recientes aparecen primero */
+  datos.sort((a,b)=>fechaValor(b.fecha)-fechaValor(a.fecha));
+
+  lista.innerHTML="";
+
+  datos.forEach(item=>{
+    const article=document.createElement("article");
+    article.className="reflection-card";
+
+    const titulo=item.titulo || "Reflexión espiritual";
+    const descripcion=item.descripcion || "";
+    const fecha=item.fecha || "";
+    const enlace=item.enlace || "";
+
+    article.innerHTML=`
+      <div class="prayer-icon" title="Oración">
+        ${iconoOracion()}
+      </div>
+
+      <div>
+        ${fecha ? `
+          <div class="reflection-date">
+            <span>✦</span>
+            ${escaparHTML(formatearFecha(fecha))}
+          </div>
+        ` : ""}
+
+        <h2 class="reflection-title">${escaparHTML(titulo)}</h2>
+
+        ${descripcion ? `
+          <p class="reflection-description">
+            ${escaparHTML(descripcion)}
+          </p>
+        ` : ""}
+
+        ${enlace ? `
+          <div class="player-box">
+            <div class="player-label">🎧 Escuchar la reflexión</div>
+
+            <audio controls preload="metadata"
+              src="${escaparHTML(enlace)}">
+              Tu navegador no puede reproducir este audio.
+            </audio>
+
+            <div class="audio-status">
+              Preparando el audio…
+            </div>
+          </div>
+        ` : `
+          <div class="empty-box">
+            Audio próximamente disponible.
+          </div>
+        `}
+      </div>
+    `;
+
+    lista.appendChild(article);
+
+    const audio=article.querySelector("audio");
+    const status=article.querySelector(".audio-status");
+
+    if(audio && status){
+      audio.addEventListener("loadedmetadata",()=>{
+        status.textContent="✓ Audio disponible. Puedes reproducirlo.";
+        status.className="audio-status ok";
+      });
+
+      audio.addEventListener("error",()=>{
+        status.textContent="⚠ No se pudo cargar este audio.";
+        status.className="audio-status error";
+      });
+    }
+  });
+}
+
+function cargarReflexiones(){
+  const callbackName = "edificacionFiladelfia_" + Date.now();
+
+  window[callbackName] = function(resultado){
+    try{
+      if(!resultado || resultado.ok !== true){
+        throw new Error(
+          resultado && resultado.error
+            ? resultado.error
+            : "No se pudo obtener la información de Edificación."
+        );
+      }
+
+      const datos = Array.isArray(resultado.reflexiones)
+        ? resultado.reflexiones.map(item => ({
+            fecha: item.fecha || "",
+            titulo: item.titulo || "",
+            descripcion: item.descripcion || "",
+            enlace: item.enlace || ""
+          })).filter(item =>
+            item.fecha || item.titulo || item.descripcion || item.enlace
+          )
+        : [];
+
+      pintar(datos);
+
+    }catch(error){
+      console.error("Error cargando Edificación:", error);
+
+      lista.innerHTML = `
+        <div class="error-box">
+          ⚠ No se pudieron cargar las reflexiones.
+          <br>
+          <small>${escaparHTML(error.message || "Error de conexión.")}</small>
+        </div>`;
+    }finally{
+      delete window[callbackName];
+      const script = document.getElementById(callbackName);
+      if(script) script.remove();
+    }
+  };
+
+  const script = document.createElement("script");
+  script.id = callbackName;
+  script.src =
+    API_URL +
+    (API_URL.includes("?") ? "&" : "?") +
+    "callback=" +
+    encodeURIComponent(callbackName) +
+    "&t=" +
+    Date.now();
+
+  script.onerror = () => {
+    console.error("No se pudo conectar con Apps Script de Edificación.");
+
+    lista.innerHTML = `
+      <div class="error-box">
+        ⚠ No se pudieron cargar las reflexiones.
+        <br>
+        <small>No se pudo conectar con el servidor de Edificación.</small>
+      </div>`;
+
+    delete window[callbackName];
+    script.remove();
+  };
+
+  document.head.appendChild(script);
+}
+
+cargarReflexiones();
+</script>
+</body>
+</html>
