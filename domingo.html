@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gran Celebración - Ministerio de Alabanza Filadelfia</title>
+<link rel="stylesheet" href="domingo.css">
+<style>
+  .btn-listado{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #2B3A67;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-listado:hover{ opacity: .9; }
+  .btn-listado:disabled{ opacity: .6; cursor: default; }
+  .btn-listado-hint{
+    font-size: 12px;
+    color: #888;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+<img src="images/logo-filadelfia.jpg" alt="Logo Ministerio">
+<div>
+<small>MINISTERIO DE ALABANZA</small>
+<h1>FILADELFIA CENTRAL</h1>
+</div>
+</header>
+
+<main class="container">
+
+<section class="hero">
+<h2>🎵 Gran Celebración</h2>
+<p id="fecha">Cargando fecha...</p>
+<div>
+  <button class="btn-listado" id="btnListado" onclick="abrirListadoCompleto()" disabled>
+    🖨️ Generar listado completo de los scores
+  </button>
+  <div class="btn-listado-hint">Abre todas las canciones de la semana, una tras otra, en el visor de cifrados.</div>
+</div>
+</section>
+
+<section class="observacion" id="observacion">
+<h3>📌 Observación general</h3>
+<p>Cargando...</p>
+</section>
+
+<div id="contenido">Cargando listado musical...</div>
+
+</main>
+
+<script>
+const URL_LISTADO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=0&single=true&output=csv";
+const URL_EVENTO="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdym-CkyAemW9NWdSvNH4n8J8f3We0GXh_X03Jt8-JTVs_11tLUpCH-SQMtgeMQjaaLUremE3xBbuC/pub?gid=146984402&single=true&output=csv";
+
+// URL del visor de cifrados — la misma que ya usas para cada canción.
+const VISOR_BASE_URL = "https://casparorivera.github.io/alabanzafiladelfia/visor-cifrados.html";
+
+function parseCSV(text){
+let rows=[],row=[],cell="",quote=false;
+for(let i=0;i<text.length;i++){
+let c=text[i];
+if(c=='"'){if(quote&&text[i+1]=='"'){cell+='"';i++;}else quote=!quote;}
+else if(c==','&&!quote){row.push(cell);cell="";}
+else if((c=='\n'||c=='\r')&&!quote){if(c=='\r'&&text[i+1]=='\n')i++;row.push(cell);rows.push(row);row=[];cell="";}
+else cell+=c;
+}
+if(cell||row.length){row.push(cell);rows.push(row);}
+let headers=rows.shift().map(x=>x.trim());
+return rows.filter(r=>r.length).map(r=>{let o={};headers.forEach((h,i)=>o[h]=r[i]||"");return o;});
+}
+
+async function csv(url){return parseCSV(await (await fetch(url)).text());}
+
+// Guardamos las canciones ya cargadas para poder armar el link del
+// listado completo sin volver a pedir el CSV.
+let cancionesCargadas = [];
+
+/** Saca el id=... de un link del visor de cifrados (…/visor-cifrados.html?id=XXXX). */
+function extraerVisorId(link){
+  if(!link) return null;
+  const m = link.match(/[?&]id=([^&]+)/);
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+async function cargar(){
+let evento=(await csv(URL_EVENTO))[0] || {};
+document.getElementById("fecha").innerHTML="📅 "+(evento.Fecha||"");
+
+document.getElementById("observacion").innerHTML=
+`<h3>📌 Observación general</h3>
+<p>${evento["Observación general"]||"Sin observaciones"}</p>`;
+
+let canciones=await csv(URL_LISTADO);
+cancionesCargadas = canciones;
+let grupos={};
+
+canciones.forEach(c=>{
+let s=c.Sección||"General";
+if(!grupos[s]) grupos[s]=[];
+grupos[s].push(c);
+});
+
+let html="";
+
+for(let s in grupos){
+
+html+=`<section class="seccion"><h2>${s}</h2>`;
+
+grupos[s].forEach(c=>{
+
+html+=`
+<article class="cancion">
+
+<div>
+<strong>${c.Orden||""}. ${c.Canción||""}</strong>
+<p>🎹 Tonalidad: ${c.Tonalidad||""}</p>
+</div>
+
+<a target="_blank" href="${c["Link PDF"]||"#"}">📄 Chart</a>
+
+${c.Observaciones ? 
+`<div class="nota">
+⚠️ <strong>Observación:</strong><br>
+${c.Observaciones}
+</div>` : ""}
+
+</article>`;
+
+});
+
+html+="</section>";
+}
+
+document.getElementById("contenido").innerHTML=html;
+
+const idsValidos = canciones.map(c => extraerVisorId(c["Link PDF"])).filter(Boolean);
+const btn = document.getElementById("btnListado");
+btn.disabled = idsValidos.length === 0;
+if(idsValidos.length < canciones.length){
+  document.querySelector(".btn-listado-hint").innerHTML =
+    `Abre ${idsValidos.length} de ${canciones.length} canciones en el visor — las demás no tienen todavía un link del visor cargado.`;
+}
+}
+
+/** Arma el link combinado del visor con los IDs de todas las canciones
+ * de la semana (en el mismo orden del listado) y lo abre en una
+ * pestaña nueva — el visor las muestra una tras otra, ya con toda su
+ * tipografía y diagramas, sin duplicar nada de su interfaz. */
+function abrirListadoCompleto(){
+  const ids = cancionesCargadas.map(c => extraerVisorId(c["Link PDF"])).filter(Boolean);
+  if(ids.length === 0){
+    alert("Ninguna canción de esta semana tiene todavía un link del visor cargado.");
+    return;
+  }
+  const url = `${VISOR_BASE_URL}?ids=${ids.map(encodeURIComponent).join(",")}`;
+  window.open(url, "_blank");
+}
+
+cargar();
+</script>
+
+</body>
+</html>
